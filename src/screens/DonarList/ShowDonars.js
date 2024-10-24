@@ -28,12 +28,13 @@ const RenderItems = ({item}) => {
               <Text style={styles.itemText}>{item.name}</Text>
               <Text style={styles.itemText}>{item.city}</Text>
               <Text style={styles.itemText}>{item.contact}</Text>
-              <Text style={styles.itemText}>{item.bloodGroup}</Text>
+             
+              <Text style={styles.itemText}>{item.Date}</Text>
             </View>
           </View>
           <View style={styles.bloodGroupContainer}>
             <View style={styles.bloodGroupBox}>
-              <Text style={styles.bloodGroupText}>B+</Text>
+              <Text style={styles.bloodGroupText}>{item.bloodGroup}</Text>
             </View>
           </View>
         </TouchableOpacity>

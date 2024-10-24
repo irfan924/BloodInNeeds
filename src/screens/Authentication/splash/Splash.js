@@ -1,17 +1,27 @@
 import React, { useEffect } from "react";
 import { Image, TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { BloodDonation2 } from "../../../themes/images";
+import useStore from "../../zustand/store";
+import { StackActions, useNavigation } from "@react-navigation/native";
 
-function SplashScreen({ navigation }) {
+function SplashScreen() {
+
+    const { authState, setAuthState } = useStore();
+
+    const navigation = useNavigation();
 
     useEffect(() => {
-       
+
         const timer = setTimeout(() => {
-            navigation.navigate('SignScreen');
+
+            if (authState) {
+                navigation.dispatch(StackActions.replace('HomeScreen'));
+            } else {
+                navigation.dispatch(StackActions.replace('SignScreen'))
+            }
+
         }, 3000);
 
-        
-       
     }, []);
 
     return (
@@ -35,13 +45,13 @@ function SplashScreen({ navigation }) {
             </View>
             <View style={styles.imageSection}>
                 <TouchableOpacity style={styles.imageWrapper}
-               onPress={()=>navigation.navigate('SignScreen')}
+                    onPress={() => navigation.navigate('SignScreen')}
                 >
                     <Image source={BloodDonation2} style={styles.image} />
                 </TouchableOpacity>
                 <View style={styles.title_view}>
-                <Text style={styles.titleText}>BLOOD IN</Text>
-                <Text style={styles.titleText}>NEED</Text>
+                    <Text style={styles.titleText}>BLOOD IN</Text>
+                    <Text style={styles.titleText}>NEED</Text>
                 </View>
             </View>
         </View>
@@ -52,10 +62,10 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#EB3738',
-        justifyContent:'center',
-        alignItems:'center'
-        
-        
+        justifyContent: 'center',
+        alignItems: 'center'
+
+
     },
     quoteSection: {
         height: '26%',
@@ -63,20 +73,20 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '95%',
         alignSelf: 'center',
-        marginTop:'20%',
-        marginHorizontal:'2%'
+        marginTop: '20%',
+        marginHorizontal: '2%'
     },
     arabicText: {
         color: 'white',
         alignSelf: 'center',
         fontWeight: 'bold',
         marginBottom: '4%',
-        fontSize:16,
+        fontSize: 16,
     },
     englishText: {
         color: 'white',
         alignSelf: 'center',
-        fontSize:16
+        fontSize: 16
     },
     imageSection: {
         height: '74%',
@@ -94,19 +104,19 @@ const styles = StyleSheet.create({
         borderRadius: 200,
     },
     image: {
-       height:'50%',
-       width:'50%'
+        height: '50%',
+        width: '50%'
     },
-    title_view:{
-        marginVertical:'20%',
-        alignItems:'center'
+    title_view: {
+        marginVertical: '20%',
+        alignItems: 'center'
     },
     titleText: {
         color: 'white',
         fontWeight: 'bold',
         fontSize: 40,
         fontStyle: 'italic',
-        
+
     },
 });
 

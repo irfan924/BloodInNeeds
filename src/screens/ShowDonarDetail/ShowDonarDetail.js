@@ -35,13 +35,13 @@ function DonarDetailScreen({route}) {
       <Text style={{ color: 'black', width: '80%', borderBottomWidth: 0.9, alignSelf: 'center', marginTop: '10%' }}>Name: {item.name}</Text>
       <Text style={{ color: 'black', width: '80%', borderBottomWidth: 0.9, alignSelf: 'center', marginTop: '9%' }}>Location: {item.city} </Text>
       <Text style={{ color: 'black', width: '80%', borderBottomWidth: 0.9, alignSelf: 'center', marginTop: '9%' }}>Number:  {item.contact}</Text>
-      <Text style={{ color: 'black', width: '80%', borderBottomWidth: 0.9, alignSelf: 'center', marginTop: '9%' }}>Date: {item.bloodGroup} </Text>
-
+      <Text style={{ color: 'black', width: '80%', borderBottomWidth: 0.9, alignSelf: 'center', marginTop: '9%' }}>Date: {item.Date} </Text>
+       
       <View style={{ flexDirection: 'row', width: '80%', alignSelf: 'center', marginTop: '9%', justifyContent: 'space-between' }}>
         <Text style={{ color: 'black' }}>Blood Group</Text>
 
         <View style={{ backgroundColor: '#EB3738', width: '10%', justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ color: 'white' }}>B+</Text>
+          <Text style={{ color: 'white' }}> {item.bloodGroup}</Text>
         </View>
       </View>
       <TouchableOpacity style={{ width: '80%', height: "18%" , marginTop: '8%',alignSelf:'center'}}

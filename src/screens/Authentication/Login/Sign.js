@@ -1,21 +1,75 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
+  ActivityIndicator,
+  Alert,
   Image,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import {KeyboardAvoidingView} from 'react-native';
-import {BloodDonation2} from '../../../themes/images';
+import { KeyboardAvoidingView } from 'react-native';
+import { BloodDonation2 } from '../../../themes/images';
 import { goole } from '../../../themes/images';
+import { StackActions, useNavigation } from '@react-navigation/native';
+import useStore from '../../zustand/store';
 
-function SignScreen({navigation}) {
+function SignScreen() {
+
+  const navigation = useNavigation();
+
+  const { authState, setAuthState } = useStore()
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false)
+
+  const handleUserLogin = async () => {
+
+    try {
+      if (!email || !password) {
+        Alert.alert('Both Fields are required')
+      } else {
+
+        setLoading(true)
+        const res = await fetch(
+          "https://app.infolaravel.com/api/app-login",
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: email,
+              password: password
+            })
+          }
+        )
+
+        if (res.ok) {
+          setLoading(false)
+          setAuthState(true);
+          Alert.alert('Login Successfully');
+
+          navigation.dispatch(StackActions.replace('HomeScreen'))
+        } else {
+          setLoading(false)
+          Alert.alert('Invalid Credentials')
+        }
+      }
+    } catch (error) {
+      setLoading(false)
+      console.log(error)
+    }
+
+  }
+
   return (
-    <KeyboardAvoidingView style={{flex: 1}}>
-      <ScrollView style={{flex: 1}}>
-        <View style={{flex: 1, backgroundColor: 'rgb(255, 255, 255)'}}>
+    <KeyboardAvoidingView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1 }}>
+        <View style={{ flex: 1, backgroundColor: 'rgb(255, 255, 255)' }}>
           <View
             style={{
               height: '25%',
@@ -24,8 +78,8 @@ function SignScreen({navigation}) {
               justifyContent: 'flex-start',
             }}>
             <TouchableOpacity
-              style={{marginTop: '8%'}}
-              >
+              style={{ marginTop: '8%' }}
+            >
               <Image source={BloodDonation2} />
             </TouchableOpacity>
             <Text
@@ -55,22 +109,24 @@ function SignScreen({navigation}) {
                 alignItems: 'center',
                 width: '100%',
               }}>
-              <Text style={{color: 'black', fontWeight: '400', fontSize: 20}}>
+              <Text style={{ color: 'black', fontWeight: '400', fontSize: 20 }}>
                 LOGIN
               </Text>
             </View>
-            <View style={{height: '30%', width: '90%', alignSelf: 'center'}}>
-              <Text style={{fontWeight: '400', color: 'black'}}>Email</Text>
+            <View style={{ height: '30%', width: '90%', alignSelf: 'center' }}>
+              <Text style={{ fontWeight: '400', color: 'black' }}>Email</Text>
               <TextInput
                 placeholder="Enter Your Email"
-                style={{borderBottomWidth: 1}}
+                style={{ borderBottomWidth: 1 }}
+                onChangeText={val => setEmail(val)}
               />
             </View>
-            <View style={{height: 80, width: '90%', alignSelf: 'center'}}>
-              <Text style={{fontWeight: '400', color: 'black'}}>Password</Text>
+            <View style={{ height: 80, width: '90%', alignSelf: 'center' }}>
+              <Text style={{ fontWeight: '400', color: 'black' }}>Password</Text>
               <TextInput
                 placeholder="Enter Your Password"
-                style={{borderBottomWidth: 1}}
+                style={{ borderBottomWidth: 1 }}
+                onChangeText={val => setPassword(val)}
               />
             </View>
             <View
@@ -88,12 +144,12 @@ function SignScreen({navigation}) {
                   alignItems: 'center',
                   borderRadius: 5,
                 }}
-                onPress={() => navigation.navigate('AddDonarDetailSc')}>
-                <Text style={{color: 'white', fontWeight: '400'}}>SIGN IN</Text>
+                onPress={handleUserLogin}>
+                <Text style={{ color: 'white', fontWeight: '400' }}>SIGN IN</Text>
               </TouchableOpacity>
             </View>
           </View>
-          <View style={{height: 340, marginTop: '11%'}}>
+          <View style={{ height: 340, marginTop: '11%' }}>
             <TouchableOpacity
               onPress={() => navigation.navigate('EmailScreen')}>
               <Text
@@ -119,14 +175,14 @@ function SignScreen({navigation}) {
               <Image
                 source={goole}
 
-              //  source={require('../image/Assets/goole.png')}
-                style={{marginLeft: '3%'}}
+                //  source={require('../image/Assets/goole.png')}
+                style={{ marginLeft: '3%' }}
               />
               <Text
-                style={{color: 'black', marginLeft: '3%', fontWeight: '400'}}>
+                style={{ color: 'black', marginLeft: '3%', fontWeight: '400' }}>
                 SIGN UP WITH
               </Text>
-              <Text style={{color: '#146EC1', marginLeft: '3%'}}>GOOGLE</Text>
+              <Text style={{ color: '#146EC1', marginLeft: '3%' }}>GOOGLE</Text>
             </TouchableOpacity>
             <View
               style={{
@@ -137,9 +193,9 @@ function SignScreen({navigation}) {
                 justifyContent: 'center',
                 marginTop: '5%',
               }}>
-              <Text style={{color: 'black'}}>NOT A MEMBER YET ?</Text>
+              <Text style={{ color: 'black' }}>NOT A MEMBER YET ?</Text>
               <TouchableOpacity
-                style={{marginLeft: '3%'}}
+                style={{ marginLeft: '3%' }}
                 onPress={() => navigation.navigate('SignUpScreen')}>
                 <Text
                   style={{
@@ -154,8 +210,27 @@ function SignScreen({navigation}) {
           </View>
         </View>
       </ScrollView>
+      {
+        loading &&
+        <View style={styles.absolute}>
+          <ActivityIndicator color={'red'} size={200} />
+        </View>
+      }
     </KeyboardAvoidingView>
   );
 }
 
 export default SignScreen;
+
+const styles = StyleSheet.create({
+  absolute: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(120,120,120,0.6)'
+  }
+})

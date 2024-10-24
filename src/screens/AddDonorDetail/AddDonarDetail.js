@@ -15,7 +15,7 @@ function AddDonarDetailSc({ navigation }) {
     { id: '6', name: 'B-' },
     { id: '7', name: 'O-' },
     { id: '8', name: 'AB-' },
-   
+
   ];
 
   return (
@@ -45,17 +45,17 @@ function AddDonarDetailSc({ navigation }) {
         <View style={{ height: "11%", width: '100%', borderBottomWidth: 0.5 }}>
           <TextInput placeholder="TYPE PHONE NUMBER " style={{ fontSize: 10 }} />
         </View>
-        <Text style={{ marginTop: "8%", color: 'black', fontSize: 10 }}>LAST DONATE DATE</Text>
+        <Text style={{ marginTop: "8%", color: 'black', fontSize: 10 }}> DATE</Text>
         <View style={{ height: "11%", width: '100%', borderBottomWidth: 0.5 }}>
           <TextInput placeholder="12/12/2023" style={{ fontSize: 10 }} />
         </View>
 
       </View>
 
-       <View>
-        <Text style={{color:'black',width:'80%',marginTop:'1%',alignSelf:'center'}}>Blood Groups</Text>
-       </View>
-       <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', marginTop: 10 ,width:'86%',alignSelf:'center'}}>
+      <View>
+        <Text style={{ color: 'black', width: '80%', marginTop: '1%', alignSelf: 'center' }}>Blood Groups</Text>
+      </View>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', marginTop: 10, width: '86%', alignSelf: 'center' }}>
         {BloodGroup.map((group) => (
           <TouchableOpacity
             key={group.id}
@@ -71,25 +71,25 @@ function AddDonarDetailSc({ navigation }) {
               margin: 5,
               borderRadius: 5
             }}>
-            <Text style={{color: selectedGroup === group.id ? 'white' : '#EB3738',fontSize:12,fontWeight:'600'}}>{group.name}</Text>
+            <Text style={{ color: selectedGroup === group.id ? 'white' : '#EB3738', fontSize: 12, fontWeight: '600' }}>{group.name}</Text>
           </TouchableOpacity>
         ))}
       </View>
-      <Text style={{color:'black',width:'80%',alignSelf:'center'}}>Location</Text>
-      <TouchableOpacity style={{ width: '80%', height: "15%", marginTop: '1%', alignSelf: 'center',justifyContent:'center' }}>
-        <Image   
-        source={map}
+      <Text style={{ color: 'black', width: '80%', alignSelf: 'center' }}>Location</Text>
+      <TouchableOpacity style={{ width: '80%', height: "15%", marginTop: '1%', alignSelf: 'center', justifyContent: 'center' }}>
+        <Image
+          source={map}
 
-       // source={require('../image/Assets/map.png')}
+          // source={require('../image/Assets/map.png')}
 
-         style={{ width: '100%', height: '100%', borderRadius: 10 }} />
+          style={{ width: '100%', height: '100%', borderRadius: 10 }} />
 
       </TouchableOpacity>
-      <View style={{width:"80%",height:100,alignSelf:'center',justifyContent:'center',alignItems:'center'}}>
-       <TouchableOpacity style={{width:"80%",height:'30%',backgroundColor:'red',justifyContent:'center',alignItems:'center'}}
-       onPress={()=>navigation.navigate('HomeScreen')}>
-        <Text style={{color:'white',fontWeight:'800',fontSize:15}}>SAVE</Text>
-       </TouchableOpacity>
+      <View style={{ width: "80%", height: 100, alignSelf: 'center', justifyContent: 'center', alignItems: 'center' }}>
+        <TouchableOpacity style={{ width: "80%", height: '30%', backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }}
+          onPress={() => navigation.navigate('DonarScreen')}>
+          <Text style={{ color: 'white', fontWeight: '800', fontSize: 15 }}>SAVE</Text>
+        </TouchableOpacity>
       </View>
 
 

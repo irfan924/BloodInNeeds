@@ -1,51 +1,57 @@
 export const Donors = [
     {
       id: 1,
-      name: "Esha Saeed",
+      name: "Majeed Ali",
       age: 25,
-      bloodGroup: "A+",
-      city: "shujabad",
-      contact: "0321-1234567"
+      bloodGroup: "O-",
+      city: "Lahore",
+      contact: "0321-1234567",
+      Date: '09/10/2024'
     },
     {
       id: 2,
-      name: "Hasnain Malik",
-      age: 25,
-      bloodGroup: "A+",
-      city: "shujabad",
-      contact: "0317-0062609"
+      name: "Hunain Ali",
+      age: 22,
+      bloodGroup: "AB+",
+      city: "Islamabad",
+      contact: "0317-0062609",
+       Date: '03/10/2024'
     },
     {
       id: 3,
-      name: "Hunain Ali",
+      name: "Junaid Khan",
       age: 25,
-      bloodGroup: "A+",
-      city: "Dubai",
-      contact: "0321-1234567"
+      bloodGroup: "AB-",
+      city: "RYK",
+      contact: "0321-1234567",
+       Date: '14/10/2024'
     },
     {
       id: 4,
-      name: "Abdul Majeed Samtiah",
+      name: "Esha Saeed",
       age: 25,
       bloodGroup: "A+",
-      city: "layyah",
-      contact: "0321-1234567"
+      city: "Lahore",
+      contact: "0321-1234567",
+       Date: '26/10/2024'
     },
     {
       id: 5,
-      name: "Zainab shahid",
+      name: "Jaffar Shah",
       age: 24,
-      bloodGroup: "B++",
-      city: "shujabad",
-      contact: "0321-1234567"
+      bloodGroup: "AB+",
+      city: "Ghotki",
+      contact: "0321-1234567",
+       Date: '08/08/2024'
     },
     {
       id: 6,
       name: "Hasnain Haider",
       age: 24,
-      bloodGroup: "kala",
-      city: "Africa",
-      contact: "0321-1234567"
+      bloodGroup: "O-",
+      city: "Layyah",
+      contact: "0321-1234567",
+       Date: '09/01/2024'
     },
 
   ];

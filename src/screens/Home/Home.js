@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { ImageBackground, Text, TextInput, TouchableOpacity, View, Button, StyleSheet, FlatList, Dimensions, Image } from "react-native";
 import { account, BloodHome1, BloodHome2, BloodHome3, adddonar } from "../../themes/images";
 
-function Homecreen({ navigation }) {
+function HomeScreen({ navigation }) {
   const [data, setData] = useState([{ id: '1' }, { id: '2' }, { id: '3' }]);
   const { height, width } = Dimensions.get('window');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -131,6 +131,19 @@ function Homecreen({ navigation }) {
       }
     }}>
     <Text style={styles.requestButtonText}>REQUEST</Text>
+    
+  </TouchableOpacity>
+  <TouchableOpacity
+    style={styles.requestButton}
+    onPress={() => {
+      if (selectedGroup !== null) {
+        navigation.navigate('AddDonarDetailSc');
+      } else {
+        alert('Please select a blood group.');
+      }
+    }}>
+    <Text style={styles.requestButtonText}>ADD DONAR</Text>
+    
   </TouchableOpacity>
 </View>
 
@@ -268,7 +281,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     height: '8%',
-    justifyContent:'center'
+    justifyContent:'space-between'
     
   },
   requestButton: {
@@ -300,4 +313,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Homecreen;
+export default HomeScreen;
