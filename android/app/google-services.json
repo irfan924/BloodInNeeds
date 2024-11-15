@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "366878255994",
+    "project_id": "bloodinneed-345c7",
+    "storage_bucket": "bloodinneed-345c7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:366878255994:android:46b2bb9006de233f17c4c3",
+        "android_client_info": {
+          "package_name": "com.awesomeproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAz3qNoRLYfGIh_a8b1Eci_wVIhfuDDLPI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

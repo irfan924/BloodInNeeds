@@ -16,6 +16,8 @@ import { goole } from '../../../themes/images';
 import { StackActions, useNavigation } from '@react-navigation/native';
 import useStore from '../../zustand/store';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 function SignScreen() {
 
   const navigation = useNavigation();
@@ -50,7 +52,19 @@ function SignScreen() {
 
         if (res.ok) {
           setLoading(false)
-          setAuthState(true);
+
+          const data = await res.json();
+
+          const userData = JSON.stringify({
+            user: data?.data?.user,
+            userStatus: true,
+            token: data.data.token
+          })
+
+          await AsyncStorage.setItem('user', userData)
+
+          console.log(userData);
+          console.log('USerd ID : ', data)
           Alert.alert('Login Successfully');
 
           navigation.dispatch(StackActions.replace('HomeScreen'))
@@ -65,6 +79,63 @@ function SignScreen() {
     }
 
   }
+
+  // const handleGoogleLogin = async () => {
+  //   try {
+  //     // Sign out any previous Google session
+  //     await GoogleSignin.signOut();
+
+  //     // Check if Google Play Services are available
+  //     await GoogleSignin.hasPlayServices();
+
+  //     // Sign in with Google
+  //     const userInfo = await GoogleSignin.signIn();
+  //     const email = userInfo?.data?.user?.email;
+
+  //     if (!email) {
+  //       Alert.alert('Error', 'Unable to retrieve email from Google login.');
+  //       return;
+  //     }
+
+  //     console.log('Google login successful:', email);
+
+  //     // Prepare API body with email and login_type
+  //     const body = {
+  //       email: email,
+  //       login_type: 'google',
+  //     };
+
+  //     // API endpoint for login
+  //     const endpoint = '/login';
+
+  //     // Make the API call
+  //     const response = await apiCall(endpoint, 'POST', body);
+
+  //     if (response?.status === false) {
+  //       Alert.alert(
+  //         'Error',
+  //         response?.message || 'Invalid Google login credentials.',
+  //       );
+  //     } else {
+  //       // Store the user token or any relevant data after a successful login
+  //       await AsyncStorage.setItem('userToken', JSON.stringify(response));
+
+  //       // Navigate to the SplashScreen after successful login
+  //       navigation.navigate('SplashScreen');
+  //     }
+  //   } catch (error) {
+  //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+  //       Alert.alert('Cancelled', 'Google login was cancelled.');
+  //     } else if (error.code === statusCodes.IN_PROGRESS) {
+  //       Alert.alert('In Progress', 'Google login is already in progress.');
+  //     } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+  //       Alert.alert('Error', 'Google Play Services are not available.');
+  //     } else {
+  //       console.error('Google login error:', error);
+  //       Alert.alert('Error', 'Google login failed. Please try again.');
+  //     }
+  //   }
+  // };
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }}>

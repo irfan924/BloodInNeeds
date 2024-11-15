@@ -22,6 +22,7 @@ import MessageScreen from './src/screens/Message/Message';
 import NotificationScreen from './src/screens/Notification/Notification';
 import ShowRequestMessageScreen from './src/screens/ShowRequestMessage/ShowRequestMessage';
 import PrivacyPolicyScreen from './src/screens/PrivacyPolicy/PrivacyPolicy';
+import Chat from './src/screens/chat';
 const  App =()=> {
   const Stack=createNativeStackNavigator();
    return  (
@@ -36,6 +37,7 @@ const  App =()=> {
         <Stack.Screen name='HomeScreen' component={HomeScreen}  options={{ headerShown: false }} />
         <Stack.Screen name='DonarScreen' component={DonarScreen}  options={{ headerShown: false}}/>
         <Stack.Screen name='DonarDetailScreen' component={DonarDetailScreen}  options={{ headerShown: false}}/>
+        <Stack.Screen name='Chat' component={Chat}  options={{ headerShown: false}}/>
 
         <Stack.Screen name='MessageScreen' component={MessageScreen}  options={{ headerShown: false}}/>
         <Stack.Screen name='AddDonarDetailSc' component={AddDonarDetailSc}  options={{ headerShown: false}}/>

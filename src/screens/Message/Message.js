@@ -12,7 +12,7 @@ function MessageScreen({ navigation }) {
 
         <View style={{ width: '85%', height: '100%', alignItems: 'center', flexDirection: 'row' }}>
           <TouchableOpacity style={{ width: 7, height: 7, justifyContent: 'center', alignItems: 'center' }}
-            onPress={() => navigation.navigate('DonarDetailScreen')}>
+            onPress={() => navigation.navigate('DonarScreen')}>
             <Image source={backArrow} style={{ tintColor: 'white' }} />
           </TouchableOpacity>
         </View>

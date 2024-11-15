@@ -1,17 +1,60 @@
-import React from "react";
-import { 
-    Image, 
-    KeyboardAvoidingView, 
-    ScrollView, 
-    Text, 
-    TextInput, 
-    TouchableOpacity, 
-    View, 
-    StyleSheet 
+import React, { useState } from "react";
+import {
+    Image,
+    KeyboardAvoidingView,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+    StyleSheet,
+    Alert,
+    ActivityIndicator
 } from "react-native";
 import { BloodDonation2 } from "../../themes/images";
+import useStore from "../zustand/store";
 
 function EmailScreen({ navigation }) {
+
+    const [email, setEmail] = useState('');
+    const [loader, setLoader] = useState(false);
+    const { forgotEmail, setForgotEmail } = useStore();
+
+    const handleVerification = async () => {
+        try {
+            setLoader(true)
+            const API = `https://app.infolaravel.com/api/password/send-reset`;
+
+            if (!email) {
+                return Alert.alert('Please Type Your Email');
+            }
+
+            const res = await fetch(API, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email })
+            });
+
+            if (!res.ok) {
+                console.log(res)
+                return Alert.alert('Email Not Found', 'Please try again later, temporary error found');
+            }
+            setLoader(false)
+            Alert.alert(`Message Sent To this email Successfully ${email}`);
+            // console.log(res)
+            setForgotEmail(email);
+
+            navigation.navigate('VerifyEmailScreen');
+        } catch (error) {
+            Alert.alert('Error Found', 'Temporary Error Found. Please Try again later');
+            console.error(error);
+        } finally {
+            setLoader(false)
+        }
+    };
+
 
     return (
         <KeyboardAvoidingView style={styles.keyboardAvoidingView}>
@@ -28,20 +71,22 @@ function EmailScreen({ navigation }) {
                             <Text style={styles.emailLabel}>EMAIL</Text>
                         </View>
                         <View style={styles.infoContainer}>
-                            <Text style={styles.infoText}>“We only need your phone number for authentication</Text>
-                            <Text style={styles.infoText}>purposes and will not contact you otherwise”</Text>
+                            <Text style={styles.infoText}>
+                                “We only need your phone number for authentication purposes and will not contact you otherwise”
+                            </Text>
                         </View>
                         <View style={styles.inputContainer}>
                             <Text style={styles.inputLabel}>Email</Text>
-                            <TextInput 
-                                placeholder="Type Your Email" 
-                                style={styles.textInput} 
+                            <TextInput
+                                placeholder="Type Your Email"
+                                style={styles.textInput}
+                                onChangeText={(val) => setEmail(val)}
                             />
                         </View>
                         <View style={styles.buttonContainer}>
-                            <TouchableOpacity 
-                                style={styles.sendCodeButton} 
-                                onPress={() => navigation.navigate('VerifyEmailScreen')}
+                            <TouchableOpacity
+                                style={styles.sendCodeButton}
+                                onPress={handleVerification}
                             >
                                 <Text style={styles.buttonText}>Send Code</Text>
                             </TouchableOpacity>
@@ -55,6 +100,23 @@ function EmailScreen({ navigation }) {
                     </View>
                 </View>
             </ScrollView>
+            {
+                loader &&
+                <View
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        height: '100%',
+                        width: '100%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: 'rgba(0,0,0,0.5)'
+                    }}
+                >
+                    <ActivityIndicator size={200} color={'white'} />
+                </View>
+            }
         </KeyboardAvoidingView>
     );
 }
@@ -105,13 +167,15 @@ const styles = StyleSheet.create({
         fontSize: 20,
     },
     infoContainer: {
-        width: '100%',
+        width: '90%',
         alignSelf: 'center',
         justifyContent: 'center',
         alignItems: 'center',
     },
     infoText: {
         color: 'black',
+        textAlign: 'center',
+        fontSize: 16
     },
     inputContainer: {
         width: '85%',

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ImageBackground, Text, TextInput, TouchableOpacity, View, Button, StyleSheet, FlatList, Dimensions, Image } from "react-native";
 import { account, BloodHome1, BloodHome2, BloodHome3, adddonar } from "../../themes/images";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function HomeScreen({ navigation }) {
   const [data, setData] = useState([{ id: '1' }, { id: '2' }, { id: '3' }]);
@@ -27,6 +28,7 @@ function HomeScreen({ navigation }) {
   }, [currentIndex]);
 
   const [selectedGroup, setSelectedGroup] = useState(null);
+  const [userLogo, setUserLogo] = useState({})
 
   const BloodGroup = [
     { id: '1', name: 'A+' },
@@ -39,20 +41,37 @@ function HomeScreen({ navigation }) {
     { id: '8', name: 'AB-' },
   ];
 
+
+  const getUserLogo = async () => {
+    try {
+
+      const res = await AsyncStorage.getItem('imageUri');
+
+      const result = await JSON.parse(res)
+      console.log('Image Uri : ', result)
+      setUserLogo(result)
+
+    } catch (error) {
+      console.log('Error Found', error)
+    }
+  }
+
+
+  useEffect(() => {
+    getUserLogo()
+  }, [])
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <Text style={styles.headerText}>Home</Text>
           <TouchableOpacity
-            style={styles.notificationButton}
-            onPress={() => navigation.navigate('NotificationScreen')}>
-            <Text style={styles.notificationText}>N</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
             style={styles.profileButton}
             onPress={() => navigation.navigate('ProfileScreen')}>
-            <Image source={account} resizeMode='contain' style={styles.accountIcon} />
+
+            <Image source={account} style={styles.accountIcon} />
+
           </TouchableOpacity>
         </View>
       </View>
@@ -121,40 +140,40 @@ function HomeScreen({ navigation }) {
       </View>
 
       <View style={styles.actionContainer}>
-  <TouchableOpacity
-    style={styles.requestButton}
-    onPress={() => {
-      if (selectedGroup !== null) {
-        navigation.navigate('DonarScreen');
-      } else {
-        alert('Please select a blood group.');
-      }
-    }}>
-    <Text style={styles.requestButtonText}>REQUEST</Text>
-    
-  </TouchableOpacity>
-  <TouchableOpacity
-    style={styles.requestButton}
-    onPress={() => {
-      if (selectedGroup !== null) {
-        navigation.navigate('AddDonarDetailSc');
-      } else {
-        alert('Please select a blood group.');
-      }
-    }}>
-    <Text style={styles.requestButtonText}>ADD DONAR</Text>
-    
-  </TouchableOpacity>
-</View>
+        <TouchableOpacity
+          style={styles.requestButton}
+          onPress={() => {
+            if (selectedGroup !== null) {
+              navigation.navigate('DonarScreen');
+            } else {
+              alert('Please select a blood group.');
+            }
+          }}>
+          <Text style={styles.requestButtonText}>REQUEST</Text>
+
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.requestButton}
+          onPress={() => {
+            if (selectedGroup !== null) {
+              navigation.navigate('AddDonarDetailSc');
+            } else {
+              alert('Please select a blood group.');
+            }
+          }}>
+          <Text style={styles.requestButtonText}>ADD DONAR</Text>
+
+        </TouchableOpacity>
+      </View>
 
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
+  container: {
     flex: 1
-   },
+  },
   header: {
     height: "10%",
     width: '100%',
@@ -166,7 +185,8 @@ const styles = StyleSheet.create({
     width: '90%',
     height: '100%',
     alignItems: 'center',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   },
   headerText: {
     color: 'white',
@@ -197,21 +217,21 @@ const styles = StyleSheet.create({
     marginLeft: 10
   },
   accountIcon: {
-    tintColor: 'red'
+    tintColor: 'red',
+    // width: 50, height: 50, borderRadius: 25
   },
   imageSliderContainer: {
-    height: '60%',
+    height: '50%',
     justifyContent: 'center',
     alignItems: 'center'
   },
   imageContainer: {
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   sliderImage: {
     width: '100%',
     height: '100%',
-    borderRadius: 0
   },
   pagination: {
     justifyContent: 'center',
@@ -281,8 +301,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     height: '8%',
-    justifyContent:'space-between'
-    
+    justifyContent: 'space-between'
+
   },
   requestButton: {
     width: "45%",
@@ -290,7 +310,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#EB3738',
     justifyContent: 'center',
     alignItems: 'center',
-    
+
   },
   requestButtonText: {
     color: 'white',
