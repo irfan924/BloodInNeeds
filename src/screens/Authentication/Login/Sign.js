@@ -63,8 +63,8 @@ function SignScreen() {
 
           await AsyncStorage.setItem('user', userData)
 
-          console.log(userData);
-          console.log('USerd ID : ', data)
+          // console.log(userData);
+          // console.log('USerd ID : ', data)
           Alert.alert('Login Successfully');
 
           navigation.dispatch(StackActions.replace('HomeScreen'))

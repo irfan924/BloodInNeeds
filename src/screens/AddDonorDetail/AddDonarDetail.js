@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, ImageBackground, Text, TextInput, TouchableOpacity, View, StyleSheet, ScrollView, DonarIndex, Pressable, Linking, phoneNumber, copyPhoneNumber, Alert, ActivityIndicator } from "react-native";
 import { backArrow } from "../../themes/images";
 import { map } from "../../themes/images";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 function AddDonarDetailSc() {
 
   const navigation = useNavigation();
@@ -14,6 +15,7 @@ function AddDonarDetailSc() {
   const [date, setDate] = useState('');
   const [blood_group, setBlood_Group] = useState('');
   const [loader, setLoader] = useState(false);
+  const [userData, setUserData] = useState({})
 
 
   const BloodGroup = [
@@ -27,6 +29,25 @@ function AddDonarDetailSc() {
     { id: '8', name: 'AB-' },
 
   ];
+
+  const getUserData = async () => {
+    try {
+
+      const res = await AsyncStorage.getItem('user');
+
+      const result = await JSON.parse(res);
+
+      setUserData(result.user)
+      // console.log(result.user)
+
+    } catch (error) {
+      console.log('Error Found at Screen AddDonorDetail while getting User Data', error)
+    }
+  }
+
+  useEffect(() => {
+    getUserData()
+  }, [])
 
   const handleNewDonar = async () => {
     const API = "https://app.infolaravel.com/api/app/donors-create";
@@ -50,7 +71,8 @@ function AddDonarDetailSc() {
           city: city.trim(),
           phone: phone.trim(),
           date: date.trim(),
-          blood_group: blood_group.trim()
+          blood_group: blood_group.trim(),
+          user_id: userData.id
         })
       });
 
@@ -58,9 +80,10 @@ function AddDonarDetailSc() {
       if (response.ok) {
         try {
 
+          // console.log(userData.id)
           const data = await response.json();
           Alert.alert('Success.', 'Donors Detail Added Successfully');
-
+          // console.log(data)
           navigation.navigate('DonarScreen');
 
         } catch (jsonError) {

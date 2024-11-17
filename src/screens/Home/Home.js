@@ -42,24 +42,20 @@ function HomeScreen({ navigation }) {
   ];
 
 
-  const getUserLogo = async () => {
-    try {
+  // const getUserLogo = async () => {
+  //   try {
 
-      const res = await AsyncStorage.getItem('imageUri');
+  //     const res = await AsyncStorage.getItem('imageUri');
 
-      const result = await JSON.parse(res)
-      console.log('Image Uri : ', result)
-      setUserLogo(result)
+  //     const result = await JSON.parse(res)
+  //     console.log('Image Uri : ', result)
+  //     setUserLogo(result)
 
-    } catch (error) {
-      console.log('Error Found', error)
-    }
-  }
+  //   } catch (error) {
+  //     console.log('Error Found', error)
+  //   }
+  // }
 
-
-  useEffect(() => {
-    getUserLogo()
-  }, [])
 
   return (
     <View style={styles.container}>

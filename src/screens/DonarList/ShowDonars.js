@@ -27,16 +27,16 @@ const RenderItems = ({ item }) => {
           onPress={() => navigation.navigate('DonarDetailScreen', { item })}>
           <View style={styles.itemDetails}>
             <View style={styles.itemTextContainer}>
-              <Text style={styles.itemText}>{item.name}</Text>
-              <Text style={styles.itemText}>{item.city}</Text>
-              <Text style={styles.itemText}>{item.phone}</Text>
+              <Text style={styles.itemText}>{item?.name}</Text>
+              <Text style={styles.itemText}>{item?.city}</Text>
+              <Text style={styles.itemText}>{item?.phone}</Text>
 
-              <Text style={styles.itemText}>{item.date}</Text>
+              <Text style={styles.itemText}>{item?.date}</Text>
             </View>
           </View>
           <View style={styles.bloodGroupContainer}>
             <View style={styles.bloodGroupBox}>
-              <Text style={styles.bloodGroupText}>{item.blood_group}</Text>
+              <Text style={styles.bloodGroupText}>{item?.blood_group}</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -70,6 +70,8 @@ function DonarScreen({ navigation }) {
       const data = await response.json();
 
       setDonarsList(data.data)
+
+      // console.log('Donors List : ', data)
 
     } catch (error) {
 
@@ -167,7 +169,7 @@ function DonarScreen({ navigation }) {
             searchingList &&
             <FlatList
               data={searchingList}
-              keyExtractor={item => item.id.toString()}
+              keyExtractor={item => item?.id.toString()}
               renderItem={({ item }) => <RenderItems item={item} />}
             />
           }
@@ -175,7 +177,7 @@ function DonarScreen({ navigation }) {
             searchingList.length <= 0 && donarsList &&
               <FlatList
                 data={donarsList}
-                keyExtractor={item => item.id.toString()}
+                keyExtractor={item => item?.id.toString()}
                 renderItem={({ item }) => <RenderItems item={item} />}
               />
              

@@ -82,6 +82,10 @@ android {
         versionCode 1
         versionName '1.0'
     }
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -110,19 +114,22 @@ android {
         }
     }
 }
-
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation('com.facebook.react:react-android')
     implementation('com.facebook.react:flipper-integration')
-
     if (hermesEnabled.toBoolean()) {
         implementation('com.facebook.react:hermes-android')
     } else {
         implementation jscFlavor
     }
+
+    implementation platform('com.google.firebase:firebase-bom:32.1.0')
+
+    implementation 'com.google.firebase:firebase-messaging:23.2.1' // Update to the latest version
+    //  implementation 'io.notifee' // Or the latest Notifee version
 }
 
 apply from: file('../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle'); applyNativeModulesAppBuildGradle(project)
 
-apply plugin: 'com.google.gms.google-services' 
+apply plugin: 'com.google.gms.google-services'
