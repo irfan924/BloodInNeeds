@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, Text, TouchableOpacity, View, Linking, ActivityIndicator, Alert } from "react-native";
 import { backArrow } from "../../themes/images";
 import { map } from "../../themes/images";
@@ -14,15 +14,28 @@ function DonarDetailScreen({ route }) {
   const navigation = useNavigation();
   const { item } = route?.params;
   const [showContact, setShowContact] = useState(false);
-  const donorId = item?.user_id;
-  const donorUserId = item?.id;
-
+  const donorUserId = item?.user_id;
+  const donorId = item?.id;
+  const [donorUserData, setDonorUserData] = useState({})
   const whatsappNumber = '+923047451194'
   const email = 'irfanmahar429@gmail.com'
 
   // ;(()=>{
-  //   console.log('DonarID : ',donorId)
+  //   console.log('Item : ',item)
   // })()
+
+  useEffect(() => {
+    const getDonorUserData = async () => {
+      const res = await fetch(`https://app.infolaravel.com/api/user/${donorUserId}`)
+
+      const data = await res.json();
+      // console.log(data.data)
+
+      setDonorUserData(data?.data)
+
+    }
+    getDonorUserData()
+  }, [])
 
   return (
     item ?
@@ -41,10 +54,18 @@ function DonarDetailScreen({ route }) {
           </View>
         </View>
 
-        <Text style={{ color: 'black', width: '80%', borderBottomWidth: 0.9, alignSelf: 'center', marginTop: '10%' }}>Name: {item.name}</Text>
-        <Text style={{ color: 'black', width: '80%', borderBottomWidth: 0.9, alignSelf: 'center', marginTop: '9%' }}>Location: {item.city} </Text>
-        <Text style={{ color: 'black', width: '80%', borderBottomWidth: 0.9, alignSelf: 'center', marginTop: '9%' }}>Number:  {item.phone}</Text>
-        <Text style={{ color: 'black', width: '80%', borderBottomWidth: 0.9, alignSelf: 'center', marginTop: '9%' }}>Date: {item.date} </Text>
+        <Text style={{ color: 'black', width: '80%', borderBottomWidth: 0.9, alignSelf: 'center', marginTop: '10%' }}>
+          Name: {item.name}
+        </Text>
+        <Text style={{ color: 'black', width: '80%', borderBottomWidth: 0.9, alignSelf: 'center', marginTop: '9%' }}>
+          Location: {item.city}
+        </Text>
+        <Text style={{ color: 'black', width: '80%', borderBottomWidth: 0.9, alignSelf: 'center', marginTop: '9%' }}>
+          Number:  {item.phone}
+        </Text>
+        <Text style={{ color: 'black', width: '80%', borderBottomWidth: 0.9, alignSelf: 'center', marginTop: '9%' }}>
+          Date: {item.date}
+        </Text>
 
         <View style={{ flexDirection: 'row', width: '80%', alignSelf: 'center', marginTop: '9%', justifyContent: 'space-between' }}>
           <Text style={{ color: 'black' }}>Blood Group</Text>
@@ -53,11 +74,11 @@ function DonarDetailScreen({ route }) {
             <Text style={{ color: 'white' }}> {item.blood_group}</Text>
           </View>
         </View>
-        <TouchableOpacity style={{ width: '80%', height: "18%", marginTop: '8%', alignSelf: 'center' }}
+        {/* <TouchableOpacity style={{ width: '80%', height: "18%", marginTop: '8%', alignSelf: 'center' }}
         >
           <Image source={map} style={{ width: '100%', height: '100%', borderRadius: 10 }} />
 
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <View style={{ height: '16%', width: '90%', alignSelf: 'center', alignItems: 'flex-end', flexDirection: 'row', justifyContent: 'space-between' }}>
           <TouchableOpacity style={{ height: '40%', width: '48%', backgroundColor: '#EB3738', borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}
             onPress={() => setShowContact(!showContact)}>
@@ -65,7 +86,7 @@ function DonarDetailScreen({ route }) {
           </TouchableOpacity>
 
           <TouchableOpacity style={{ height: '40%', width: '48%', backgroundColor: '#EB3738', borderRadius: 10, justifyContent: 'center', alignItems: 'center' }}
-            onPress={() => navigation.navigate('Chat',{donorId,donorUserId})}>
+            onPress={() => navigation.navigate('Chat', { donorId, donorUserId })}>
             <Text style={{ color: 'white', fontWeight: '600', fontSize: 15 }}>LEAVE A MESSAGE</Text>
           </TouchableOpacity>
         </View>
@@ -92,7 +113,7 @@ function DonarDetailScreen({ route }) {
           <TouchableOpacity
             style={{ height: '18%', width: '90%', flexDirection: 'row', alignItems: 'center' }}
             onPress={() => {
-              const url = `mailto:${email}?subject=Subject&body=Hello`;
+              const url = `mailto:${donorUserData?.email}?subject=Subject&body=Hello`;
               Linking.openURL(url).catch(() => Alert.alert('Email app is Not Available'))
             }}
           >
@@ -102,7 +123,7 @@ function DonarDetailScreen({ route }) {
           <TouchableOpacity
             style={{ height: '18%', width: '90%', flexDirection: 'row', alignItems: 'center' }}
             onPress={() => {
-              const url = `tel:${whatsappNumber}`;
+              const url = `tel:${item?.phone}`;
               Linking.openURL(url).catch(() => Alert.alert("Dialer is not available"))
             }}
           >
@@ -113,11 +134,11 @@ function DonarDetailScreen({ route }) {
           </TouchableOpacity>
           <TouchableOpacity
             style={{ height: '18%', width: '90%', flexDirection: 'row', alignItems: 'center' }}
-            onPress={()=>{
+            onPress={() => {
               Share.open({
-                message: whatsappNumber,
+                message: item?.phone,
                 title: 'Copy Phone Number'
-              }).catch((error)=>{
+              }).catch((error) => {
                 Alert.alert('Copied Failed')
               })
             }}

@@ -2,8 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { ImageBackground, Text, TextInput, TouchableOpacity, View, Button, StyleSheet, FlatList, Dimensions, Image } from "react-native";
 import { account, BloodHome1, BloodHome2, BloodHome3, adddonar } from "../../themes/images";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
-function HomeScreen({ navigation }) {
+function HomeScreen() {
+
+  const navigation = useNavigation();
+
   const [data, setData] = useState([{ id: '1' }, { id: '2' }, { id: '3' }]);
   const { height, width } = Dimensions.get('window');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -31,14 +35,14 @@ function HomeScreen({ navigation }) {
   const [userLogo, setUserLogo] = useState({})
 
   const BloodGroup = [
-    { id: '1', name: 'A+' },
-    { id: '2', name: 'B+' },
-    { id: '3', name: 'O+' },
-    { id: '4', name: 'AB+' },
-    { id: '5', name: 'A-' },
-    { id: '6', name: 'B-' },
-    { id: '7', name: 'O-' },
-    { id: '8', name: 'AB-' },
+    { id: 'A+', name: 'A+' },
+    { id: 'B+', name: 'B+' },
+    { id: 'O+', name: 'O+' },
+    { id: 'AB+', name: 'AB+' },
+    { id: 'A-', name: 'A-' },
+    { id: 'B-', name: 'B-' },
+    { id: 'O-', name: 'O-' },
+    { id: 'AB-', name: 'AB-' },
   ];
 
 
@@ -140,7 +144,7 @@ function HomeScreen({ navigation }) {
           style={styles.requestButton}
           onPress={() => {
             if (selectedGroup !== null) {
-              navigation.navigate('DonarScreen');
+              navigation.navigate('DonarScreen',{blood_group : selectedGroup});
             } else {
               alert('Please select a blood group.');
             }

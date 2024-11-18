@@ -17,6 +17,10 @@ import { StackActions, useNavigation } from '@react-navigation/native';
 import useStore from '../../zustand/store';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// import {
+//   GoogleOneTapSignIn,
+//   statusCodes,
+// } from '@react-native-google-signin/google-signin';
 
 function SignScreen() {
 

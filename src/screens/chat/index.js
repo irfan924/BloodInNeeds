@@ -11,10 +11,9 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
-import { firebase } from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import notifee from '@notifee/react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { backArrow } from '../../themes/images'; // Ensure the image path is correct
 
 const Chat = () => {
@@ -26,9 +25,14 @@ const Chat = () => {
     const [newMessage, setNewMessage] = useState('');
     const [currentUser, setCurrentUser] = useState(null);
 
-    const chatId = donorId
-        ? `${donorUserId}_chat_with_${currentUser?.id}`
-        : 'default_chat_id';
+    // const chatId = donorId && donorUserId && currentUser?.id
+    //     ? `DI${donorId}_DUI${donorUserId}_CUI${currentUser.id}`
+    //     : 'default_chat_id';
+    // const participants = [donorUserId, currentUser?.id].sort(); // Sort IDs alphabetically
+    // const chatId = donorId
+    //     ? `DI${donorId}_P1${participants[0]}_P2${participants[1]}`
+    //     : 'default_chat_id';
+    const chatId = donorId ? donorId?.toLocaleString() : 'default_chat_id'
 
     const getUserData = useCallback(async () => {
         try {
@@ -42,72 +46,61 @@ const Chat = () => {
 
     const setupFCM = async () => {
         try {
-            console.log("Setting up FCM...");
-
-            // Request user permissions for notifications
             const authStatus = await messaging().requestPermission();
-            console.log("FCM Authorization Status:", authStatus);
+            const isAuthorized =
+                authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+                authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-            const isAuthorized = authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-            console.log('isAuthorized', isAuthorized)
+            console.log('FCM Authorization Status:', authStatus);
 
             if (isAuthorized) {
-                // Get FCM token
                 const fcmToken = await messaging().getToken();
-                console.log("FCM Token:", fcmToken);
-                console.log("User ID:", currentUser?.id);
+                console.log('FCM Token:', fcmToken);
 
-                if (!fcmToken || !currentUser?.id) {
-                    return console.log('Missing FCM token or User ID', fcmToken, currentUser?.id)
-                }
-
-                let token = fcmToken;
-                let userId = currentUser?.id.toLocaleString();
-                // console.log('typeof User Id', typeof(userId))
-                try {
+                if (fcmToken && currentUser?.id) {
                     await firestore()
                         .collection('users')
-                        .doc(userId)
-                        .set({ fcmToken: token }, { merge: true })
-                        .then(() => console.log("Test Firestore write successful."))
-                        .catch((error) => console.log("Test Firestore write failed:", error));
-                } catch (error) {
-                    console.log("Firestore write error of Token:", error);
+                        .doc(currentUser?.id.toString())
+                        .set({ fcmToken }, { merge: true });
                 }
+
+                messaging().onTokenRefresh(async (newToken) => {
+                    console.log('FCM Token Refreshed:', newToken);
+                    await firestore()
+                        .collection('users')
+                        .doc(currentUser?.id.toString())
+                        .set({ fcmToken: newToken }, { merge: true });
+                });
             } else {
-                console.warn("FCM Authorization denied or not granted provisionally.");
+                Alert.alert('Notification Permission', 'Please enable notifications for this app.');
             }
 
-            // Handle notifications while the app is in the foreground
-            const unsubscribeOnMessage = messaging().onMessage(async (remoteMessage) => {
-                try {
-                    console.log("Foreground Notification Received:", remoteMessage);
-                    displayNotification(remoteMessage);
-                } catch (err) {
-                    console.error("Error handling foreground notification:", err);
-                }
+            // Foreground notifications
+            messaging().onMessage(async (remoteMessage) => {
+                console.log('Foreground Notification Received:', remoteMessage);
+                displayNotification(remoteMessage);
             });
 
-            // Return the unsubscribe function for cleanup
-            return unsubscribeOnMessage;
+            // Background/killed state notifications
+            messaging().onNotificationOpenedApp((remoteMessage) => {
+                console.log('Notification Opened:', remoteMessage);
+                handleNotificationNavigation(remoteMessage);
+            });
 
-        } catch (error) {
-            console.error("Error setting up FCM:", error);
-
-            // Additional debugging for `relativePath.split`
-            if (error.message.includes("relativePath.split")) {
-                console.error("Potential misconfiguration in Firebase setup. Check the following:");
-                console.error("- Ensure `google-services.json` is correctly placed in `android/app/`.");
-                console.error("- Verify Firebase SDK versions are compatible.");
-                console.error("- Check for missing or invalid dependencies in `build.gradle`.");
+            const initialNotification = await messaging().getInitialNotification();
+            if (initialNotification) {
+                console.log('Initial Notification:', initialNotification);
+                handleNotificationNavigation(initialNotification);
             }
+        } catch (error) {
+            console.error('Error setting up FCM:', error);
         }
     };
 
     useEffect(() => {
         getUserData();
         setupFCM();
+
         const unsubscribe = firestore()
             .collection('chats')
             .doc(chatId)
@@ -123,8 +116,6 @@ const Chat = () => {
 
         return () => unsubscribe();
     }, [chatId, getUserData]);
-
-
     const displayNotification = async (remoteMessage) => {
         await notifee.displayNotification({
             title: remoteMessage.notification?.title || 'New Message',
@@ -132,22 +123,13 @@ const Chat = () => {
             android: {
                 channelId: 'default',
                 smallIcon: 'ic_launcher', // Replace with your app's small icon
+                pressAction: {
+                    id: 'default',
+                    launchActivity: 'default',
+                },
             },
         });
     };
-
-    // Create notification channel for Android
-    useEffect(() => {
-        const createNotificationChannel = async () => {
-            await notifee.createChannel({
-                id: 'default',
-                name: 'Default Channel',
-                importance: notifee.AndroidImportance?.HIGH,
-            });
-        };
-
-        createNotificationChannel();
-    }, []);
 
     const sendMessage = async () => {
         if (!newMessage.trim()) return;
@@ -160,63 +142,51 @@ const Chat = () => {
         };
 
         try {
-            // Save message to Firestore
             await firestore()
                 .collection('chats')
                 .doc(chatId)
                 .collection('messages')
-                .add(messageData)
-                .then(() => {
-                    console.log('Message Saved in Firestore Database');
-                })
-                .catch(() => {
-                    console.log('Error Found While Saving Message In Firestore Database')
-                })
+                .add(messageData);
 
-            // Send FCM notification to the receiver
-            const recipientId = donorId.toLocaleString();
+            const recipientId = donorUserId.toString();
             const recipientSnapshot = await firestore()
                 .collection('users')
                 .doc(recipientId)
                 .get();
-            // .then((res) => {
-            //     const recipientToken = res.data()?.fcmToken;
-            //     console.log('recipientToken : ', recipientToken)
-            //     console.log('Successfully Run Send Notification To reciever');
-            // })
-            // .catch(() => {
-            //     console.log('Error Found While Sending Notification To reciever')
-            // })
             const recipientToken = recipientSnapshot?.data()?.fcmToken;
 
-            if (!recipientToken) {
-                return console.log('Error Found While Sending Notification To reciever')
-            }
-
-            try {
-                await messaging().sendMessage({
-                    to: recipientToken,
-                    notification: {
-                        title: 'New Message',
-                        body: newMessage,
+            if (recipientToken) {
+                const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `AIzaSyAYJW5MrpRzjpuiuh2pN7vxfhpYNAiMd20`, // Replace with your server key
                     },
-                    data: {
-                        chatId,
-                        senderId: currentUser.id.toLocaleString(),
-                    },
+                    body: JSON.stringify({
+                        to: recipientToken,
+                        notification: {
+                            title: 'New Message',
+                            body: newMessage,
+                        },
+                        data: {
+                            chatId,
+                            senderId: currentUser?.id?.toString(),
+                        },
+                    }),
                 });
-                console.log('Done')
-            } catch (error) {
-                console.log('Error sending FCM message:', error);
-            }
 
+                // const result = await JSON.parse(response);
+                console.log('Notification sent Succesfully');
+            } else {
+                console.warn('Recipient FCM token not found.');
+            }
             setNewMessage('');
         } catch (error) {
-            console.log('Error sending message:', error);
+            console.error('Error sending message:', error);
         }
     };
 
-    // Render each message in the FlatList
+
     const renderMessage = ({ item }) => {
         const isCurrentUser = item.sender === currentUser?.id;
         const formattedTime = item.timestamp
@@ -226,6 +196,7 @@ const Chat = () => {
                 hour12: true,
             })
             : 'N/A';
+
         return (
             <View
                 style={[
@@ -244,7 +215,6 @@ const Chat = () => {
 
     return (
         <View style={styles.container}>
-            {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity
                     style={styles.backButton}
@@ -255,7 +225,6 @@ const Chat = () => {
                 <Text style={styles.headerTitle}>ChatBox</Text>
             </View>
 
-            {/* Chat Messages */}
             <FlatList
                 data={messages}
                 keyExtractor={(item) => item.id}
@@ -263,7 +232,6 @@ const Chat = () => {
                 contentContainerStyle={styles.messageList}
             />
 
-            {/* Message Input */}
             <View style={styles.inputContainer}>
                 <TextInput
                     value={newMessage}
@@ -320,7 +288,7 @@ const styles = StyleSheet.create({
     },
     currentUserMessage: {
         alignSelf: 'flex-end',
-        backgroundColor: '#F0A8D2'
+        backgroundColor: '#F0A8D2',
     },
     otherUserMessage: {
         alignSelf: 'flex-start',
@@ -328,17 +296,16 @@ const styles = StyleSheet.create({
     },
     senderId: {
         fontSize: 12,
-        color: 'white',
+        color: '#555',
         marginBottom: 5,
     },
     messageText: {
         fontSize: 16,
         color: 'black',
-        marginVertical: 4
     },
     timestamp: {
         fontSize: 10,
-        color: '#fff',
+        color: '#555',
         marginTop: 5,
         alignSelf: 'flex-end',
     },

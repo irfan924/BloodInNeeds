@@ -18,7 +18,6 @@ function ProfileScreen() {
 
     const [userData, setUserData] = useState({});
     const [userLogo, setUserLogo] = useState('');
-    const [filepath, setfilePath] = useState('');
     const [localPath, setLocalPath] = useState('');
     const [name, setName] = useState('');
     const [city, setCity] = useState('');
@@ -117,6 +116,10 @@ function ProfileScreen() {
                 return Alert.alert('Update Failed', errorResponse.message || 'Please try again.');
             }
 
+            setName('');
+            setCity('');
+            setPhone('');
+
             const data = await response.json();
             console.log('Update Successful:', data);
 
@@ -141,6 +144,7 @@ function ProfileScreen() {
             }
         };
         loadImage();
+        
     }, [])
 
 
@@ -211,6 +215,7 @@ function ProfileScreen() {
                             placeholder={userData?.name === null ? 'Unknown' : userData?.name}
                             title={'User Name'}
                             onChangeText={(val) => setName(val)}
+                            editable={userData?.name?.length > 0 ? false : true}
                         />
                         <ProfileInput
                             placeholder={userData.email}
@@ -221,12 +226,14 @@ function ProfileScreen() {
                             placeholder={userData?.city === null ? 'Unknown' : userData?.city}
                             title={'City'}
                             onChangeText={(val) => setCity(val)}
+                            editable={userData?.city?.length > 0 ? false : true}
                         />
                         <ProfileInput
                             placeholder={userData?.phone}
                             title={'Phone Number'}
                             onChangeText={(val) => setPhone(val)}
                             keyboardType={'numeric'}
+                            editable={userData?.phone?.length > 0 ? false : true}
                         />
                     </View>
 
@@ -244,6 +251,9 @@ function ProfileScreen() {
                             marginVertical: 16
                         }}
                         onPress={handleUpdate}
+                        disabled={
+                            email.length <= 0 && name.length <= 0 && city.length <= 0 && phone.length <= 0 ? true : false
+                        }
                     >
                         <Text style={{ color: 'red', fontWeight: '400', fontSize: 16 }}>
                             Update
@@ -277,7 +287,7 @@ function ProfileScreen() {
                     alignSelf: 'center',
                     marginVertical: 24
                 }}
-                // onPress={() => navigation.navigate('PrivacyPolicyScreen')}
+                onPress={() => navigation.navigate('PrivacyPolicyScreen')}
                 >
                     <Text style={{
                         color: 'white',
@@ -317,7 +327,7 @@ function ProfileScreen() {
 
 
                 {
-                    loader &&
+                    loader || !userData &&
                     <View style={{
                         // flex: 1,
                         width: '100%',

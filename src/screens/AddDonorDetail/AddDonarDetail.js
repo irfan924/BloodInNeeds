@@ -94,7 +94,7 @@ function AddDonarDetailSc() {
       } else {
 
         console.log('Server Response Error:', response);
-        Alert.alert('Error Found.', 'Please Write Date in this Format : 00-00-0000');
+        Alert.alert('Error Found.', 'Please Write Date in this Format : 0000-00-00');
 
       }
     } catch (error) {
@@ -156,7 +156,7 @@ function AddDonarDetailSc() {
         <Text style={{ marginTop: "8%", color: 'black', fontSize: 10 }}> DATE</Text>
         <View style={{ height: "11%", width: '100%', borderBottomWidth: 0.5 }}>
           <TextInput
-            placeholder="12-12-2023"
+            placeholder="2023-12-12"
             style={{ fontSize: 10 }}
             value={date}
             onChangeText={val => setDate(val)}
@@ -189,7 +189,7 @@ function AddDonarDetailSc() {
         ))}
       </View>
       <Text style={{ color: 'black', width: '80%', alignSelf: 'center' }}>Location</Text>
-      <TouchableOpacity style={{ width: '80%', height: "15%", marginTop: '1%', alignSelf: 'center', justifyContent: 'center' }}>
+      {/* <TouchableOpacity style={{ width: '80%', height: "15%", marginTop: '1%', alignSelf: 'center', justifyContent: 'center' }}>
         <Image
           source={map}
 
@@ -197,7 +197,7 @@ function AddDonarDetailSc() {
 
           style={{ width: '100%', height: '100%', borderRadius: 10 }} />
 
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <View style={{ width: "80%", height: 100, alignSelf: 'center', justifyContent: 'center', alignItems: 'center' }}>
         <TouchableOpacity style={{ width: "80%", height: '30%', backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }}
           onPress={handleNewDonar}>

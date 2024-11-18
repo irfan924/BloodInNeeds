@@ -14,7 +14,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { items } from './data';
 import { styles } from './styles';
 import { backArrow } from '../../themes/images';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 
 const RenderItems = ({ item }) => {
@@ -45,7 +45,15 @@ const RenderItems = ({ item }) => {
   );
 };
 
-function DonarScreen({ navigation }) {
+function DonarScreen() {
+
+  const navigation = useNavigation();
+  const route = useRoute();
+
+  const { blood_group } = route?.params;
+
+  // ;(()=>{console.log(blood_group)})()
+
   const [isOpen, setIsOpen] = useState(false);
   const [currentValue, setCurrentValue] = useState('');
 
@@ -54,7 +62,7 @@ function DonarScreen({ navigation }) {
   const [loader, setLoader] = useState(false)
 
   const getDonars = async () => {
-    const API = "https://app.infolaravel.com/api/app/donors-list";
+    const API = `https://app.infolaravel.com/api/app/donors-list/${blood_group ? blood_group : 'O+'}`;
 
     try {
       setLoader(true);
@@ -175,12 +183,12 @@ function DonarScreen({ navigation }) {
           }
           {
             searchingList.length <= 0 && donarsList &&
-              <FlatList
-                data={donarsList}
-                keyExtractor={item => item?.id.toString()}
-                renderItem={({ item }) => <RenderItems item={item} />}
-              />
-             
+            <FlatList
+              data={donarsList}
+              keyExtractor={item => item?.id.toString()}
+              renderItem={({ item }) => <RenderItems item={item} />}
+            />
+
           }
         </View>
       </View>
