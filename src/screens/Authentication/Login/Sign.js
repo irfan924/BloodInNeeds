@@ -9,6 +9,8 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Linking,
+  Platform
 } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native';
 import { BloodDonation2 } from '../../../themes/images';
@@ -17,6 +19,7 @@ import { StackActions, useNavigation } from '@react-navigation/native';
 import useStore from '../../zustand/store';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// import { handleGoogle } from '../../googl-login';
 // import {
 //   GoogleOneTapSignIn,
 //   statusCodes,
@@ -141,6 +144,51 @@ function SignScreen() {
   //   }
   // };
 
+  // const handleGoogle = async () => {
+  //   try {
+
+  //     const API = `https://app.infolaravel.com/api/auth/google/redirect`
+
+  //     const res = await fetch(API, {
+  //       method: 'GET'
+  //     });
+
+  //     const result = await res.json();
+
+  //     console.log(result)
+
+  //   } catch (error) {
+  //     console.log('error found on login with Google : ', error);
+
+  //   }
+  // }
+
+
+  const handleGoogle = async () => {
+
+    try {
+      const API = `https://app.infolaravel.com/api/auth/google/redirect`;
+
+      const res = await fetch(API, { method: 'GET' });
+      const result = await res.json();
+
+      if (result?.url) {
+        // Open the URL in the app or browser
+        // if (Platform.OS === 'android' || Platform.OS === 'ios') {
+        //   // Navigate to the WebView screen with the URL
+        //   navigation.navigate('GoogleLoginWebView', { url: result.url });
+        // } else {
+        // Open in external browser
+        Linking.openURL(result.url);
+        // }
+      } else {
+        console.error('No URL received from API.');
+      }
+    } catch (error) {
+      console.log('Error found on login with Google:', error);
+    }
+  };
+
   return (
     <KeyboardAvoidingView style={{ flex: 1 }}>
       <ScrollView style={{ flex: 1 }}>
@@ -246,11 +294,11 @@ function SignScreen() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginTop: '3%',
-              }}>
+              }}
+              // onPress={handleGoogle}
+            >
               <Image
                 source={goole}
-
-                //  source={require('../image/Assets/goole.png')}
                 style={{ marginLeft: '3%' }}
               />
               <Text

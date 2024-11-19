@@ -52,6 +52,8 @@ function DonarScreen() {
 
   const { blood_group } = route?.params;
 
+  // const [bloodGroup, setBloodGroup]
+
   // ;(()=>{console.log(blood_group)})()
 
   const [isOpen, setIsOpen] = useState(false);

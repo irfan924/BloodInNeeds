@@ -45,7 +45,7 @@ function DonarDetailScreen({ route }) {
 
           <View style={{ width: '85%', height: '100%', alignItems: 'center', flexDirection: 'row' }}>
             <TouchableOpacity style={{ width: 7, height: 7, justifyContent: 'center', alignItems: 'center' }}
-              onPress={() => navigation.navigate('DonarScreen')}>
+              onPress={() => navigation.navigate('HomeScreen')}>
 
               <Image source={backArrow} style={{ tintColor: 'white' }} />
 
@@ -102,7 +102,7 @@ function DonarDetailScreen({ route }) {
           <TouchableOpacity
             style={{ height: '18%', width: '90%', flexDirection: 'row', alignItems: 'center' }}
             onPress={() => {
-              const url = `whatsapp://send?phone=${whatsappNumber}&text=Hello!`;
+              const url = `whatsapp://send?phone=${item?.phone}&text=Hello!`;
               Linking.openURL(url).catch(() => Alert.alert('Whatsapp Not Available'))
             }}
           >

@@ -84,7 +84,7 @@ function AddDonarDetailSc() {
           const data = await response.json();
           Alert.alert('Success.', 'Donors Detail Added Successfully');
           // console.log(data)
-          navigation.navigate('DonarScreen');
+          navigation.navigate('DonarScreen', { blood_group: blood_group });
 
         } catch (jsonError) {
 
@@ -188,7 +188,7 @@ function AddDonarDetailSc() {
           </TouchableOpacity>
         ))}
       </View>
-      <Text style={{ color: 'black', width: '80%', alignSelf: 'center' }}>Location</Text>
+      {/* <Text style={{ color: 'black', width: '80%', alignSelf: 'center' }}>Location</Text> */}
       {/* <TouchableOpacity style={{ width: '80%', height: "15%", marginTop: '1%', alignSelf: 'center', justifyContent: 'center' }}>
         <Image
           source={map}

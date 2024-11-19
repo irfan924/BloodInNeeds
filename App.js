@@ -23,10 +23,10 @@ import NotificationScreen from './src/screens/Notification/Notification';
 import ShowRequestMessageScreen from './src/screens/ShowRequestMessage/ShowRequestMessage';
 import PrivacyPolicyScreen from './src/screens/PrivacyPolicy/PrivacyPolicy';
 import Chat from './src/screens/chat';
-import { LogLevel, OneSignal } from 'react-native-onesignal';
 import { useEffect } from 'react';
 import notifee from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
+import { GoogleLoginWebView } from './src/screens/googl-login';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
@@ -66,31 +66,31 @@ const App = () => {
 
   async function setupFirebase() {
     try {
-        // Request permissions
-        const authStatus = await messaging().requestPermission();
-        console.log('Authorization status:', authStatus);
+      // Request permissions
+      const authStatus = await messaging().requestPermission();
+      // console.log('Authorization status:', authStatus);
 
-        // Get FCM token
-        const token = await messaging().getToken();
-        console.log('FCM Token:', token);
+      // Get FCM token
+      const token = await messaging().getToken();
+      // console.log('FCM Token:', token);
 
-        // Handle foreground messages
-        messaging().onMessage(async (remoteMessage) => {
-            console.log('FCM Message received in foreground:', remoteMessage);
+      // Handle foreground messages
+      messaging().onMessage(async (remoteMessage) => {
+        console.log('FCM Message received in foreground:', remoteMessage);
 
-            // Show a notification
-            await notifee.displayNotification({
-                title: remoteMessage.notification?.title || 'New Notification',
-                body: remoteMessage.notification?.body || 'You have a new message.',
-                android: {
-                    channelId: 'default',
-                },
-            });
+        // Show a notification
+        await notifee.displayNotification({
+          title: remoteMessage.notification?.title || 'New Notification',
+          body: remoteMessage.notification?.body || 'You have a new message.',
+          android: {
+            channelId: 'default',
+          },
         });
+      });
     } catch (error) {
-        console.error('Error setting up FCM:', error);
+      console.error('Error setting up FCM:', error);
     }
-}
+  }
 
 
   useEffect(() => {
@@ -107,6 +107,7 @@ const App = () => {
         <Stack.Screen name='SplashScreen' component={SplashScreen} options={{ headerShown: false }} />
         <Stack.Screen name='SignScreen' component={SignScreen} options={{ headerShown: false }} />
         <Stack.Screen name='SignUpScreen' component={SignUpScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="GoogleLoginWebView" component={GoogleLoginWebView} options={{ headerShown: false }} />
         <Stack.Screen name='EmailScreen' component={EmailScreen} options={{ headerShown: false }} />
         <Stack.Screen name='VerifyEmailScreen' component={VerifyEmailScreen} options={{ headerShown: false }} />
         <Stack.Screen name='NScreen' component={NScreen} options={{ headerShown: false }} />
