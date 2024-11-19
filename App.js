@@ -27,6 +27,7 @@ import { useEffect } from 'react';
 import notifee from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 import { GoogleLoginWebView } from './src/screens/googl-login';
+import Notifications from './src/screens/notifications';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
@@ -64,42 +65,42 @@ const App = () => {
 
 
 
-  async function setupFirebase() {
-    try {
-      // Request permissions
-      const authStatus = await messaging().requestPermission();
-      // console.log('Authorization status:', authStatus);
+  // async function setupFirebase() {
+  //   try {
+  //     // Request permissions
+  //     const authStatus = await messaging().requestPermission();
+  //     // console.log('Authorization status:', authStatus);
 
-      // Get FCM token
-      const token = await messaging().getToken();
-      // console.log('FCM Token:', token);
+  //     // Get FCM token
+  //     const token = await messaging().getToken();
+  //     // console.log('FCM Token:', token);
 
-      // Handle foreground messages
-      messaging().onMessage(async (remoteMessage) => {
-        console.log('FCM Message received in foreground:', remoteMessage);
+  //     // Handle foreground messages
+  //     messaging().onMessage(async (remoteMessage) => {
+  //       console.log('FCM Message received in foreground:', remoteMessage);
 
-        // Show a notification
-        await notifee.displayNotification({
-          title: remoteMessage.notification?.title || 'New Notification',
-          body: remoteMessage.notification?.body || 'You have a new message.',
-          android: {
-            channelId: 'default',
-          },
-        });
-      });
-    } catch (error) {
-      console.error('Error setting up FCM:', error);
-    }
-  }
+  //       // Show a notification
+  //       await notifee.displayNotification({
+  //         title: remoteMessage.notification?.title || 'New Notification',
+  //         body: remoteMessage.notification?.body || 'You have a new message.',
+  //         android: {
+  //           channelId: 'default',
+  //         },
+  //       });
+  //     });
+  //   } catch (error) {
+  //     console.error('Error setting up FCM:', error);
+  //   }
+  // }
 
 
-  useEffect(() => {
-    // initializeFCM();
-    setupFirebase();
-    notifee.registerForegroundService(() => {
-      return new Promise(() => { });
-    });
-  }, []);
+  // useEffect(() => {
+  //   // initializeFCM();
+  //   setupFirebase();
+  //   notifee.registerForegroundService(() => {
+  //     return new Promise(() => { });
+  //   });
+  // }, []);
 
   return (
     <NavigationContainer>
@@ -122,6 +123,7 @@ const App = () => {
         <Stack.Screen name="ShowRequestMessageScreen" component={ShowRequestMessageScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Notifications" component={Notifications} options={{ headerShown: false }} />
       </Stack.Navigator>
 
     </NavigationContainer>

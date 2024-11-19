@@ -17,8 +17,6 @@ function DonarDetailScreen({ route }) {
   const donorUserId = item?.user_id;
   const donorId = item?.id;
   const [donorUserData, setDonorUserData] = useState({})
-  const whatsappNumber = '+923047451194'
-  const email = 'irfanmahar429@gmail.com'
 
   // ;(()=>{
   //   console.log('Item : ',item)
@@ -86,7 +84,10 @@ function DonarDetailScreen({ route }) {
           </TouchableOpacity>
 
           <TouchableOpacity style={{ height: '40%', width: '48%', backgroundColor: '#EB3738', borderRadius: 10, justifyContent: 'center', alignItems: 'center' }}
-            onPress={() => navigation.navigate('Chat', { donorId, donorUserId })}>
+            onPress={
+              () => navigation.navigate('Chat', { donorId, donorUserId })
+            }
+          >
             <Text style={{ color: 'white', fontWeight: '600', fontSize: 15 }}>LEAVE A MESSAGE</Text>
           </TouchableOpacity>
         </View>

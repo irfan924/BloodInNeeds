@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -20,10 +20,11 @@ import useStore from '../../zustand/store';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { handleGoogle } from '../../googl-login';
-// import {
-//   GoogleOneTapSignIn,
-//   statusCodes,
-// } from '@react-native-google-signin/google-signin';
+import {
+  GoogleOneTapSignIn,
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 
 function SignScreen() {
 
@@ -87,7 +88,7 @@ function SignScreen() {
 
   }
 
-  // const handleGoogleLogin = async () => {
+  // const handleGoogle = async () => {
   //   try {
   //     // Sign out any previous Google session
   //     await GoogleSignin.signOut();
@@ -104,7 +105,7 @@ function SignScreen() {
   //       return;
   //     }
 
-  //     console.log('Google login successful:', email);
+  //     console.log('Google login successful:', userInfo);
 
   //     // Prepare API body with email and login_type
   //     const body = {
@@ -113,23 +114,23 @@ function SignScreen() {
   //     };
 
   //     // API endpoint for login
-  //     const endpoint = '/login';
+  //     // const endpoint = '/login';
 
   //     // Make the API call
-  //     const response = await apiCall(endpoint, 'POST', body);
+  //     // const response = await apiCall(endpoint, 'POST', body);
 
-  //     if (response?.status === false) {
-  //       Alert.alert(
-  //         'Error',
-  //         response?.message || 'Invalid Google login credentials.',
-  //       );
-  //     } else {
+  //     // if (response?.status === false) {
+  //     //   Alert.alert(
+  //     //     'Error',
+  //     //     response?.message || 'Invalid Google login credentials.',
+  //     //   );
+  //     // } else {
   //       // Store the user token or any relevant data after a successful login
-  //       await AsyncStorage.setItem('userToken', JSON.stringify(response));
+  //       // await AsyncStorage.setItem('userToken', JSON.stringify(response));
 
   //       // Navigate to the SplashScreen after successful login
-  //       navigation.navigate('SplashScreen');
-  //     }
+  //       // navigation.navigate('SplashScreen');
+  //     // }
   //   } catch (error) {
   //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
   //       Alert.alert('Cancelled', 'Google login was cancelled.');
@@ -173,14 +174,8 @@ function SignScreen() {
       const result = await res.json();
 
       if (result?.url) {
-        // Open the URL in the app or browser
-        // if (Platform.OS === 'android' || Platform.OS === 'ios') {
-        //   // Navigate to the WebView screen with the URL
-        //   navigation.navigate('GoogleLoginWebView', { url: result.url });
-        // } else {
-        // Open in external browser
+
         Linking.openURL(result.url);
-        // }
       } else {
         console.error('No URL received from API.');
       }
@@ -188,6 +183,34 @@ function SignScreen() {
       console.log('Error found on login with Google:', error);
     }
   };
+
+  // useEffect(() => {
+  //   const handleOpenURL = (event) => {
+  //     const { url } = event;
+  //     const queryParams = new URLSearchParams(url.split('?')[1]);
+  //     const token = queryParams.get('token');
+
+  //     if (token) {
+  //       Alert.alert('Google Authentication', `Received token: ${token}`);
+  //       // Do something with the token, e.g., store it or make an API call
+  //     } else {
+  //       console.error('No token found in the URL.');
+  //     }
+  //   };
+
+  //   // Subscribe to the URL event listener
+  //   Linking.addEventListener('url', handleOpenURL);
+
+  //   // Handle the initial URL (if the app was launched via a link)
+  //   Linking.getInitialURL().then((url) => {
+  //     if (url) handleOpenURL({ url });
+  //   });
+
+  //   // Clean up the event listener
+  //   return () => {
+  //     Linking.removeEventListener('url', handleOpenURL);
+  //   };
+  // }, []);
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }}>
@@ -295,7 +318,7 @@ function SignScreen() {
                 justifyContent: 'center',
                 marginTop: '3%',
               }}
-              // onPress={handleGoogle}
+              onPress={handleGoogle}
             >
               <Image
                 source={goole}

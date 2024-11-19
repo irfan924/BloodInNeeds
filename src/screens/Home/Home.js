@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ImageBackground, Text, TextInput, TouchableOpacity, View, Button, StyleSheet, FlatList, Dimensions, Image } from "react-native";
 import { account, BloodHome1, BloodHome2, BloodHome3, adddonar } from "../../themes/images";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
+
+import Icon from 'react-native-vector-icons/Ionicons'
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function HomeScreen() {
 
@@ -33,6 +35,7 @@ function HomeScreen() {
 
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [userLogo, setUserLogo] = useState({})
+  const [userInfo, setUserInfo] = useState({});
 
   const BloodGroup = [
     { id: 'A+', name: 'A+' },
@@ -46,19 +49,23 @@ function HomeScreen() {
   ];
 
 
-  // const getUserLogo = async () => {
-  //   try {
+  const getUserInfo = async () => {
+    try {
 
-  //     const res = await AsyncStorage.getItem('imageUri');
+      const res = await AsyncStorage.getItem('user');
 
-  //     const result = await JSON.parse(res)
-  //     console.log('Image Uri : ', result)
-  //     setUserLogo(result)
+      const result = await JSON.parse(res)
+      // console.log('UserInfo is : ', result.user)
+      setUserInfo(result.user)
 
-  //   } catch (error) {
-  //     console.log('Error Found', error)
-  //   }
-  // }
+    } catch (error) {
+      console.log('Error Found', error)
+    }
+  }
+
+  useEffect(()=>{
+    getUserInfo()
+  },[])
 
 
   return (
@@ -66,13 +73,23 @@ function HomeScreen() {
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <Text style={styles.headerText}>Home</Text>
-          <TouchableOpacity
-            style={styles.profileButton}
-            onPress={() => navigation.navigate('ProfileScreen')}>
+          <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+            <TouchableOpacity
+              style={styles.profileButton}
+              onPress={() => navigation.navigate('Notifications',{userId: userInfo?.id})}
+            >
 
-            <Image source={account} style={styles.accountIcon} />
+              <Image source={require('../../Assets/image/bellIcon.png')} style={{ width: 24, height: 24 }} />
 
-          </TouchableOpacity>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.profileButton}
+              onPress={() => navigation.navigate('ProfileScreen')}>
+
+              <Image source={account} style={styles.accountIcon} />
+
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
@@ -144,7 +161,7 @@ function HomeScreen() {
           style={styles.requestButton}
           onPress={() => {
             if (selectedGroup !== null) {
-              navigation.navigate('DonarScreen',{blood_group : selectedGroup});
+              navigation.navigate('DonarScreen', { blood_group: selectedGroup });
             } else {
               alert('Please select a blood group.');
             }

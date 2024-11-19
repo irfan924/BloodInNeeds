@@ -25,13 +25,6 @@ const Chat = () => {
     const [newMessage, setNewMessage] = useState('');
     const [currentUser, setCurrentUser] = useState(null);
 
-    // const chatId = donorId && donorUserId && currentUser?.id
-    //     ? `DI${donorId}_DUI${donorUserId}_CUI${currentUser.id}`
-    //     : 'default_chat_id';
-    // const participants = [donorUserId, currentUser?.id].sort(); // Sort IDs alphabetically
-    // const chatId = donorId
-    //     ? `DI${donorId}_P1${participants[0]}_P2${participants[1]}`
-    //     : 'default_chat_id';
     const chatId = donorId ? donorId?.toLocaleString() : 'default_chat_id'
 
     const getUserData = useCallback(async () => {
@@ -44,62 +37,62 @@ const Chat = () => {
         }
     }, []);
 
-    const setupFCM = async () => {
-        try {
-            const authStatus = await messaging().requestPermission();
-            const isAuthorized =
-                authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-                authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    // const setupFCM = async () => {
+    //     try {
+    //         const authStatus = await messaging().requestPermission();
+    //         const isAuthorized =
+    //             authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    //             authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-            console.log('FCM Authorization Status:', authStatus);
+    //         console.log('FCM Authorization Status:', authStatus);
 
-            if (isAuthorized) {
-                const fcmToken = await messaging().getToken();
-                console.log('FCM Token:', fcmToken);
+    //         if (isAuthorized) {
+    //             const fcmToken = await messaging().getToken();
+    //             console.log('FCM Token:', fcmToken);
 
-                if (fcmToken && currentUser?.id) {
-                    await firestore()
-                        .collection('users')
-                        .doc(currentUser?.id.toString())
-                        .set({ fcmToken }, { merge: true });
-                }
+    //             if (fcmToken && currentUser?.id) {
+    //                 await firestore()
+    //                     .collection('users')
+    //                     .doc(currentUser?.id.toString())
+    //                     .set({ fcmToken }, { merge: true });
+    //             }
 
-                messaging().onTokenRefresh(async (newToken) => {
-                    console.log('FCM Token Refreshed:', newToken);
-                    await firestore()
-                        .collection('users')
-                        .doc(currentUser?.id.toString())
-                        .set({ fcmToken: newToken }, { merge: true });
-                });
-            } else {
-                Alert.alert('Notification Permission', 'Please enable notifications for this app.');
-            }
+    //             messaging().onTokenRefresh(async (newToken) => {
+    //                 console.log('FCM Token Refreshed:', newToken);
+    //                 await firestore()
+    //                     .collection('users')
+    //                     .doc(currentUser?.id.toString())
+    //                     .set({ fcmToken: newToken }, { merge: true });
+    //             });
+    //         } else {
+    //             Alert.alert('Notification Permission', 'Please enable notifications for this app.');
+    //         }
 
-            // Foreground notifications
-            messaging().onMessage(async (remoteMessage) => {
-                console.log('Foreground Notification Received:', remoteMessage);
-                displayNotification(remoteMessage);
-            });
+    //         // Foreground notifications
+    //         messaging().onMessage(async (remoteMessage) => {
+    //             console.log('Foreground Notification Received:', remoteMessage);
+    //             displayNotification(remoteMessage);
+    //         });
 
-            // Background/killed state notifications
-            messaging().onNotificationOpenedApp((remoteMessage) => {
-                console.log('Notification Opened:', remoteMessage);
-                handleNotificationNavigation(remoteMessage);
-            });
+    //         // Background/killed state notifications
+    //         messaging().onNotificationOpenedApp((remoteMessage) => {
+    //             console.log('Notification Opened:', remoteMessage);
+    //             handleNotificationNavigation(remoteMessage);
+    //         });
 
-            const initialNotification = await messaging().getInitialNotification();
-            if (initialNotification) {
-                console.log('Initial Notification:', initialNotification);
-                handleNotificationNavigation(initialNotification);
-            }
-        } catch (error) {
-            console.error('Error setting up FCM:', error);
-        }
-    };
+    //         const initialNotification = await messaging().getInitialNotification();
+    //         if (initialNotification) {
+    //             console.log('Initial Notification:', initialNotification);
+    //             handleNotificationNavigation(initialNotification);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error setting up FCM:', error);
+    //     }
+    // };
 
     useEffect(() => {
         getUserData();
-        setupFCM();
+        // setupFCM();
 
         const unsubscribe = firestore()
             .collection('chats')
@@ -148,35 +141,35 @@ const Chat = () => {
                 .collection('messages')
                 .add(messageData);
 
-            const recipientId = donorUserId.toString();
-            const recipientSnapshot = await firestore()
-                .collection('users')
-                .doc(recipientId)
-                .get();
-            const recipientToken = recipientSnapshot?.data()?.fcmToken;
+            const recipientId = donorUserId;
 
-            if (recipientToken) {
-                const response = await fetch('https://fcm.googleapis.com/fcm/send', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `AIzaSyAYJW5MrpRzjpuiuh2pN7vxfhpYNAiMd20`, // Replace with your server key
-                    },
-                    body: JSON.stringify({
-                        to: recipientToken,
-                        notification: {
-                            title: 'New Message',
-                            body: newMessage,
+            if (recipientId) {
+                try {
+                    const response = await fetch('https://app.infolaravel.com/api/send-notification', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
                         },
-                        data: {
-                            chatId,
-                            senderId: currentUser?.id?.toString(),
-                        },
-                    }),
-                });
+                        body: JSON.stringify({
+                            message: newMessage,
+                            sender_id: currentUser.id,
+                            receiver_id: recipientId,
+                            doc_id: donorId,
+                        }),
+                    });
 
-                // const result = await JSON.parse(response);
-                console.log('Notification sent Succesfully');
+                    if (!response.ok) {
+                        return Alert.alert('Error While Sending Notification', `Status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    // console.log('Notification sent successfully:', result);
+                } catch (error) {
+                    // console.error('Error while sending notification:', error);
+                    Alert.alert('Error', 'Something went wrong. Please try again.');
+                }
+
             } else {
                 console.warn('Recipient FCM token not found.');
             }
