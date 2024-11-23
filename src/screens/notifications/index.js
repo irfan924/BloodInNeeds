@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Notifications = () => {
 
@@ -11,17 +12,40 @@ const Notifications = () => {
 
 
   const [notifications, setNotifications] = useState([]);
+  const [chatIds, setChatIds] = useState({});
+
+  const getChatIds = async () => {
+    try {
+
+      const res = await AsyncStorage.getItem('senderIds');
+
+      const data = await JSON.parse(res);
+
+      console.log('chatIds : ', data)
+
+      setChatIds(data);
+
+    } catch (error) {
+      console.log('Error While fetching Chat ids : ', error);
+
+    }
+  }
 
   const getNotifications = async () => {
+
+    const currentUserId = chatIds.receiver_id == userId ? chatIds.receiver_id : chatIds.sender_id
+
     try {
 
       const API = `https://app.infolaravel.com/api/user-notifications/${userId}`
+
+      console.log('User ID : ',userId)
 
       const res = await fetch(API);
 
       const data = await res.json();
 
-      // console.log(data.notofications);
+      console.log('Notifications : ', data?.notifications);
 
       setNotifications(data.notifications);
 
@@ -31,21 +55,28 @@ const Notifications = () => {
   }
 
   useEffect(() => {
+    getChatIds();
     getNotifications();
   }, [])
 
   // Render each notification item
-  const renderNotification = ({ item }) => (
-    <TouchableOpacity
-      style={styles.notificationCard}
-      onPress={() => {
-        navigation.navigate('Chat', { donorId: item.doc_id, donorUserId: item.receiver_id })
-      }}
-    >
-      <Text style={styles.messageText}>{item.message}</Text>
-      <Text style={styles.receiverText}>Sender ID: {item.sender_id}</Text>
-    </TouchableOpacity>
-  );
+  const renderNotification = ({ item }) => {
+
+    const createdAtLocal = new Date(item.created_at).toLocaleString();
+
+    return (
+      <TouchableOpacity
+        style={styles.notificationCard}
+        onPress={() => {
+          navigation.navigate('Chat', { donorId: item.doc_id, donorUserId: item.receiver_id })
+        }}
+      >
+        <Text style={styles.messageText}>{item.message}</Text>
+        <Text style={styles.receiverText}>Sender ID: {item.sender_id}</Text>
+        <Text style={styles.time}>{createdAtLocal}</Text>
+      </TouchableOpacity>
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -109,4 +140,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666', // Subtle color for secondary text
   },
+  time: {
+    color: 'gray',
+    marginVertical: 8,
+    fontSize: 12
+  }
 });

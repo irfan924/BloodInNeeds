@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
-import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { backArrow } from '../../themes/images'; // Ensure the image path is correct
@@ -162,7 +161,10 @@ const Chat = () => {
                     if (!response.ok) {
                         return Alert.alert('Error While Sending Notification', `Status: ${response.status}`);
                     }
-
+                    await AsyncStorage.setItem('senderIds', JSON.stringify({
+                        sender_id: currentUser.id,
+                        receiver_id: recipientId,
+                    }))
                     const result = await response.json();
                     // console.log('Notification sent successfully:', result);
                 } catch (error) {

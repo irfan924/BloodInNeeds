@@ -36,6 +36,7 @@ function HomeScreen() {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [userLogo, setUserLogo] = useState({})
   const [userInfo, setUserInfo] = useState({});
+  const [chatIds, setChatIds] = useState({})
 
   const BloodGroup = [
     { id: 'A+', name: 'A+' },
@@ -63,9 +64,27 @@ function HomeScreen() {
     }
   }
 
-  useEffect(()=>{
-    getUserInfo()
-  },[])
+  const getChatIds = async () => {
+    try {
+
+      const res = await AsyncStorage.getItem('senderIds');
+
+      const data = await JSON.parse(res);
+
+      // console.log('chatIds : ', data)
+
+      setChatIds(data);
+
+    } catch (error) {
+      console.log('Error While fetching Chat ids : ', error);
+
+    }
+  }
+
+  useEffect(() => {
+    getUserInfo();
+    getChatIds();
+  }, [])
 
 
   return (
@@ -76,10 +95,11 @@ function HomeScreen() {
           <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
             <TouchableOpacity
               style={styles.profileButton}
-              onPress={() => navigation.navigate('Notifications',{userId: userInfo?.id})}
+              onPress={() => navigation.navigate('Notifications', { userId: userInfo.id })}
             >
 
               <Image source={require('../../Assets/image/bellIcon.png')} style={{ width: 24, height: 24 }} />
+              {/* <Text>{userInfo.id}</Text> */}
 
             </TouchableOpacity>
             <TouchableOpacity
